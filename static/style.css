@@ -1,0 +1,199 @@
+body {
+    background-image: url('OIP.jpg');
+    background-size: cover; /* Ensures the background image covers the entire page */
+    background-position: center; /* Centers the background image */
+    background-color: grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center; /* Centers text inside the elements */
+}
+
+h1 {
+    color: aqua;
+    margin: 20px 0;
+    font-size: 3em; /* Increased font size */
+}
+
+
+form {
+    display: flex;
+    flex-direction: column; /* Stack the inputs and button vertically */
+    align-items: center; /* Center the form elements horizontally */
+    justify-content: center;
+}
+
+input {
+    margin: 10px 0;
+    padding: 10px; /* Increased size */
+    font-size: 1.2em; /* Increased font size */
+    border-radius: 50px;
+    border: 1px solid; /* Added border */
+    width: 250px; /* Set a fixed width to avoid overflow */
+    text-align: center; /* Center input text */
+}
+
+.button {
+    margin: 20px 0;
+    padding: 10px;
+    font-size: 1.2em;
+    border-radius: 50px;
+    border: 1px solid; /* Added border */
+    background-color: #4CAF50; /* Added button background color */
+    color: white; /* Added button text color */
+    cursor: pointer; /* Added cursor change on hover */
+    width: 250px; /* Set a fixed width to match input size */
+    transition: background-color 0.3s; /* Smooth transition on hover */
+}
+
+.button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+p {
+    font-weight: bold;
+    font-size: 1em;
+    color: white;
+    margin-top: 20px; /* Added margin for better spacing */
+}
+
+/* Style the 'Sign up here' link */
+a {
+    color: grey; /* Set the color you want (green here) */
+    text-decoration: none; /* Remove the default underline */
+    font-weight: bold; /* Make the text bold */
+}
+
+/* Optional: Change color on hover */
+a:hover {
+    color: white; /* Set a different color when the user hovers over the link */
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Style the message (error or success) */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    top: 20px;
+}
+
+#message {
+    background-color: transparent; /* Default red for error messages */
+    color: red;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    width: 250px;
+    text-align: center;
+    opacity: 1;
+    transition: opacity 5s ease-out; /* Smooth fade-out transition */
+}
+
+/* Optionally change message color for success */
+#message.success {
+    background-color: transparent; /* Green for success messages */
+}
+
+/* Optional: Smooth transition for when the message disappears */
+ul li {
+    animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* Navbar Styles */
+h2{
+    position: fixed;
+    top: 0;
+    left: -60px;
+    width: 300px;
+    background-color: transparent;
+    padding: 10px;
+}
+h3{
+    position: fixed;
+    top: 50px;
+}
+
+.submit {
+    width: 100px;
+    border-radius: 50px;
+    position: fixed;
+    right: 530px;
+    background-color: #45a049; /* Green background for the button */
+    color: white; /* White text on the button */
+    padding: 10px 20px; /* Add some padding for better click area */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Make the cursor a pointer on hover */
+    font-size: 10px; /* Adjust font size for better readability */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.submit:hover {
+    background-color: #3e8e41; /* Darker shade of green on hover */
+}
+
+.navbar {
+    margin: 20px;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 300px;
+    background-color: transparent;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds a subtle shadow for better visibility */
+}
+
+.navbar a {
+    color: #FFFFFF ;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #7DF9FF; /* Light gray background on hover */
+}
+
+.navbar a i {
+    margin-right: 10px;
+}
+
+.navbar .notification {
+    position: relative;
+}
+
+.navbar .notification .badge {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    padding: 5px 10px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+}
+
+/* Styling for the welcome message */
+h2 {
+    color: #ffffff;
+    font-size: 30px;
+    margin: 20px;
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='hehe.js') }}"></script>
+</head>
+<body>
+    {% if message %}
+    <ul>
+        <li id="message">{{ message }}</li>
+    </ul>
+    {% endif %}
+    
+    <h1>Sign up</h1>
+    <div id="error-message"></div>
+    <form action="{{ url_for('signup') }}" method="POST">
+        <input type="text" name="username" placeholder="Username" required/>
+        <input type="password" name="password" placeholder="Password" required/>
+        <input type="password" name="confirm_password" placeholder="Confirm password" required/>
+        <button type="submit" class="button">Sign up</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Log in here</a></p> 
+</body>
+</html>
