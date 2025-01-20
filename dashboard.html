@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='hehe.js') }}"></script>
+</head>
+<body>
+
+<div class="navbar">
+  <a href="{{ url_for('web_interface', username=username) }}?action=messages"><i class="icon-message"></i>Messages</a>
+  <a href="{{ url_for('web_interface', username=username) }}?action=inbox"><i class="icon-inbox"></i>Inbox</a>
+  <a href="{{ url_for('web_interface', username=username) }}?action=pay bills"><i class="icon-bills"></i>Pay Bills</a>
+  <a href="{{ url_for('web_interface', username=username) }}?action=transaction"><i class="icon-transaction"></i>Transaction</a>
+  <a href="{{ url_for('web_interface', username=username) }}?action=transfer-money"><i class="icon-transfer"></i>Transfer Money</a>
+  <a href="{{ url_for('web_interface', username=username) }}?action=notification" class="notification">
+    <i class="icon-notification"></i>Notification
+    {% if unread_count > 0 %}
+    <span class="badge">{{ unread_count }}</span>
+    {% endif %}
+  </a>
+</div>
+
+<h2>Welcome, {{ username }}!</h2>
+
+{% if message %}
+  <div id="message" class="{{ message[1] }}">{{ message[0] }}</div>
+{% endif %}
+
+{% if action == 'messages' %}
+  <h3>Messages</h3>
+  <form method="POST" action="{{ url_for('web_interface', username=username) }}?action=messages">
+    <input type="text" name="to_phone_number" placeholder="Enter recipient's phone number" required pattern="\d{10}" title="Phone number must be 10 digits">
+    <input type="text" name="message" placeholder="Enter your message" required>
+    <button type="submit" class="submit">Send Message</button>
+  </form>
+
+{% elif action == 'inbox' %}
+  <h3>Inbox</h3>
+  {% if transactions %}
+    <ul>
+      {% for transaction in transactions %}
+      <div class="inbox"
+        <li>{{ transaction['biller'] }} | {{ transaction['amount'] }} | {{ transaction['account_number'] }} | {{ transaction['timestamp'] }}</li>
+    </div>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No recent transactions.</p>
+  {% endif %}
+
+{% elif action == 'pay bills' %}
+  <h3>Pay Bills</h3>
+  <form method="POST" action="{{ url_for('web_interface', username=username) }}?action=pay bills">
+      <input type="text" name="biller" placeholder="Enter Biller" required>
+      <input type="number" step="0.01" name="amount" placeholder="Enter Amount" required>
+      <input type="text" name="account_number" placeholder="Enter Account Number" required>
+      <button type="submit">Pay Bill</button>
+  </form>
+  {% if biller %}
+    <p>Biller: {{ biller }}</p>
+    <p>Amount: {{ amount }}</p>
+    <p>Account Number: {{ account_number }}</p>
+  {% endif %}
+
+{% elif action == 'transaction' %}
+  <h3>Transactions</h3>
+  {% if transactions %}
+    <ul>
+      {% for transaction in transactions %}
+      <div class="details"
+        <li>{{ transaction['biller'] }} | {{ transaction['amount'] }} | {{ transaction['account_number'] }} | {{ transaction['timestamp'] }}</li>
+      </div>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No recent transactions.</p>
+  {% endif %}
+
+{% elif action == 'notification' %}
+  <h3>Notifications</h3>
+  {% if notifications %}
+    <ul>
+      <div class="notify>"
+      {% for notification in notifications %}
+      <div class="notify>"
+      <li><strong>{{ notification['title'] }}</strong>: {{ notification['message'] }} <small>{{ notification['timestamp'] }}</small></li>
+    </div>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No notifications at this time.</p>
+  {% endif %}
+
+{% else %}
+  <p>Select an action from the menu above.</p>
+{% endif %}
+
+</body>
+</html>
