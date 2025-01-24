@@ -1,102 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <!-- Linking to external CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='hehe.js') }}"></script>
 </head>
 <body>
 
-<div class="navbar">
-  <a href="{{ url_for('web_interface', username=username) }}?action=messages"><i class="icon-message"></i>Messages</a>
-  <a href="{{ url_for('web_interface', username=username) }}?action=inbox"><i class="icon-inbox"></i>Inbox</a>
-  <a href="{{ url_for('web_interface', username=username) }}?action=pay bills"><i class="icon-bills"></i>Pay Bills</a>
-  <a href="{{ url_for('web_interface', username=username) }}?action=transaction"><i class="icon-transaction"></i>Transaction</a>
-  <a href="{{ url_for('web_interface', username=username) }}?action=transfer-money"><i class="icon-transfer"></i>Transfer Money</a>
-  <a href="{{ url_for('web_interface', username=username) }}?action=notification" class="notification">
-    <i class="icon-notification"></i>Notification
-    {% if unread_count > 0 %}
-    <span class="badge">{{ unread_count }}</span>
+    <!-- Navbar Section -->
+    <div class="navbar">
+        <a href="{{ url_for('web_interface', username=username) }}?action=balance"><i class="icon-balance"></i>Balance
+        <a href="{{ url_for('web_interface', username=username) }}?action=messages"><i class="icon-message"></i>Messages</a>
+        <a href="{{ url_for('web_interface', username=username) }}?action=inbox"><i class="icon-inbox"></i>Inbox</a>
+        <a href="{{ url_for('web_interface', username=username) }}?action=pay bills"><i class="icon-bills"></i>Pay Bills</a>
+        <a href="{{ url_for('web_interface', username=username) }}?action=transaction"><i class="icon-transaction"></i>Transaction History</a>
+        <a href="{{ url_for('web_interface', username=username) }}?action=transfer-money"><i class="icon-transfer"></i>Transfer Money</a>
+        <a href="{{ url_for('web_interface', username=username) }}?action=sendmoney"><i class="icon-sendmoneyr"></i>Send Money</a>
+        <!-- <a href="{{ url_for('web_interface', username=username) }}?action=create_pin"><i class="icon-create_pin"></i>PIN</a> -->
+        <a href="{{ url_for('web_interface', username=username) }}?action=notification" class="notification">
+            <i class="icon-notification"></i>Notification
+            {% if unread_count > 0 %}
+                <span class="badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    <h2>Welcome, {{ username }}!</h2>
+
+    {% if message %}
+        <div id="message" class="{{ message[1] }}">{{ message[0] }}</div>
     {% endif %}
-  </a>
-</div>
 
-<h2>Welcome, {{ username }}!</h2>
+    <!-- Dynamic Content Based on Action -->
+    {% if action == 'balance' %}
+    <p>Account Balance: ${{ user['balance'] }}</p>
 
-{% if message %}
-  <div id="message" class="{{ message[1] }}">{{ message[0] }}</div>
-{% endif %}
+    <!-- Cash-In to Bank -->
+    <form method="POST" class="mb-3">
+        <h4>Cash-In to Bank</h4>
+        <input type="number" name="cashin_amount" placeholder="Amount" required>
+        <input type="number" step="0.01" name="bank_account" placeholder="Bank Account Number" required>
+        <input type="password" name="pin" placeholder="Card PIN" required>
+        <button type="submit" class="btn btn-success">Cash-In</button>
+    </form>
 
-{% if action == 'messages' %}
-  <h3>Messages</h3>
-  <form method="POST" action="{{ url_for('web_interface', username=username) }}?action=messages">
-    <input type="text" name="to_phone_number" placeholder="Enter recipient's phone number" required pattern="\d{10}" title="Phone number must be 10 digits">
-    <input type="text" name="message" placeholder="Enter your message" required>
-    <button type="submit" class="submit">Send Message</button>
-  </form>
+    {% elif action == 'messages' %}
+        <h3>Messages</h3>
+        <form method="POST" action="{{ url_for('web_interface', username=username) }}?action=messages">
+            <input type="text" name="to_phone_number" placeholder="Enter recipient's phone number" required pattern="\d{10}" title="Phone number must be 10 digits">
+            <input type="text" name="message" placeholder="Enter your message" required>
+            <button type="submit" class="submit">Send Message</button>
+        </form>
 
-{% elif action == 'inbox' %}
-  <h3>Inbox</h3>
-  {% if transactions %}
-    <ul>
-      {% for transaction in transactions %}
-      <div class="inbox"
-        <li>{{ transaction['biller'] }} | {{ transaction['amount'] }} | {{ transaction['account_number'] }} | {{ transaction['timestamp'] }}</li>
-    </div>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No recent transactions.</p>
-  {% endif %}
+    {% elif action == 'inbox' %}
+        <h3>Inbox</h3>
+        {% if transactions %}
+            <ul>
+                {% for transaction in transactions %}
+                    <div class="inbox">
+                        <li>{{ transaction['biller'] }} | {{ transaction['amount'] }} | {{ transaction['account_number'] }} | {{ transaction['timestamp'] }}</li>
+                    </div>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No recent transactions.</p>
+        {% endif %}
 
-{% elif action == 'pay bills' %}
-  <h3>Pay Bills</h3>
-  <form method="POST" action="{{ url_for('web_interface', username=username) }}?action=pay bills">
-      <input type="text" name="biller" placeholder="Enter Biller" required>
-      <input type="number" step="0.01" name="amount" placeholder="Enter Amount" required>
-      <input type="text" name="account_number" placeholder="Enter Account Number" required>
-      <button type="submit">Pay Bill</button>
-  </form>
-  {% if biller %}
-    <p>Biller: {{ biller }}</p>
-    <p>Amount: {{ amount }}</p>
-    <p>Account Number: {{ account_number }}</p>
-  {% endif %}
+    {% elif action == 'pay bills' %}
+        <h3>Pay Bills</h3>
+        <form method="POST" action="{{ url_for('web_interface', username=username) }}?action=pay bills">
+            <input type="text" name="biller" placeholder="Enter Biller" required>
+            <input type="number" step="0.01" name="amount" placeholder="Enter Amount" required>
+            <input type="text" name="account_number" placeholder="Enter Account Number" required>
+            <button type="submit">Pay Bill</button>
+        </form>
+        {% if biller %}
+            <p>Biller: {{ biller }}</p>
+            <p>Amount: {{ amount }}</p>
+            <p>Account Number: {{ account_number }}</p>
+        {% endif %}
 
-{% elif action == 'transaction' %}
-  <h3>Transactions</h3>
-  {% if transactions %}
-    <ul>
-      {% for transaction in transactions %}
-      <div class="details"
-        <li>{{ transaction['biller'] }} | {{ transaction['amount'] }} | {{ transaction['account_number'] }} | {{ transaction['timestamp'] }}</li>
-      </div>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No recent transactions.</p>
-  {% endif %}
 
-{% elif action == 'notification' %}
-  <h3>Notifications</h3>
-  {% if notifications %}
-    <ul>
-      <div class="notify>"
-      {% for notification in notifications %}
-      <div class="notify>"
-      <li><strong>{{ notification['title'] }}</strong>: {{ notification['message'] }} <small>{{ notification['timestamp'] }}</small></li>
-    </div>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No notifications at this time.</p>
-  {% endif %}
 
-{% else %}
-  <p>Select an action from the menu above.</p>
-{% endif %}
+    {% elif action == 'transaction' %}
+        <h3>Transactions</h3>
+        {% if transactions %}
+          <ul>
+            {% for transaction in transactions %}
+            <div class="details"
+              <li>{{ transaction['biller'] }} | {{ transaction['amount'] }} | {{ transaction['account_number'] }} | {{ transaction['timestamp'] }}</li>
+            </div>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No recent transactions.</p>
+        {% endif %}
+
+    {% elif action == 'transfer-money' %}
+        <h3>Transfer Money</h3>
+
+        <!-- Transfer to Bank -->
+        <form method="POST" class="mb-3">
+            <h4>Transfer to Bank</h4>
+            <input type="hidden" name="action" value="transfer_to_bank">
+            <label for="amount">Amount:</label>
+            <input type="number" name="amount" step="0.01" required>
+            <label for="bank_account">Bank Account Number:</label>
+            <input type="text" name="bank_account" required>
+            <button type="submit" class="btn btn-info">Transfer to Bank</button>
+        </form>
+
+    {% elif action == 'sendmoney' %}
+        <h3>Send Money</h3>
+        <!-- Send Money to Another User -->
+        <form method="POST" class="mb-3">
+            <h4>Send Money</h4>
+            <input type="hidden" name="action" value="send_money">
+            <label for="recipient_username">Recipient Username:</label>
+            <input type="text" name="recipient_username" required>
+            <label for="amount">Amount:</label>
+            <input type="number" name="amount" step="0.01" required>
+            <button type="submit" class="btn btn-primary">Send Money</button>
+        </form>
+
+        <!-- {% elif action == 'PIN' %} 
+        <h3>PIN</h3> 
+        <h2>{% if user['pin'] %}Change{% else %}Create{% endif %} PIN</h2>  
+        <form method="POST" action="{{ url_for('web_interface', username=username, action='change-pin') }}">  
+           {% if user['pin'] %}  
+                <label for="old_pin">Old PIN:</label>  
+                <input type="password" id="old_pin" name="old_pin" required>  
+            {% endif %}  
+            
+            <label for="new_pin">New PIN:</label>  
+            <input type="password" id="new_pin" name="new_pin" required>  
+    
+            <label for="confirm_pin">Confirm New PIN:</label>  
+            <input type="password" id="confirm_pin" name="confirm_pin" required>  
+            
+            <button type="submit">{% if user['pin'] %}Change{% else %}Create{% endif %} PIN</button> -->
+        
+        
+
+    {% elif action == 'notification' %}
+        <h3>Notifications</h3>
+        {% if notifications %}
+            <ul>
+                {% for notification in notifications %}
+                    <div class="notify">
+                        <li><strong>{{ notification['title'] }}</strong>: {{ notification['message'] }} <small>{{ notification['timestamp'] }}</small></li>
+                    </div>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No notifications at this time.</p>
+        {% endif %}
+
+    {% else %}
+        <p>Select an action from the menu.</p>
+    {% endif %}
 
 </body>
 </html>
