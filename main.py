@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'alkxctcegjjdvfbvgxzc'  # Use a strong secret key in production!
@@ -48,7 +49,6 @@ def init_db():
             conn.execute("ALTER TABLE notifications ADD COLUMN read INTEGER DEFAULT 0")
 
         conn.commit()
-
 
 # Call init_db() to create the tables when the application starts
 init_db()
@@ -103,25 +103,192 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/web/<username>', methods=['GET', 'POST'])
 def web_interface(username):
+    with get_db() as conn:
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        
+    if not user:
+        message = 'User not found.'
+        return redirect(url_for('home'))
+
+    user = dict(user)  # Make sure the result is converted to a dictionary
     action = request.args.get('action', None)
     message = None
+    unread_count = 0
+    recipient = None
     biller = None
     amount = None
     account_number = None
-    balance = None
-
-    # Initialize unread_count to be used later
-    unread_count = 0
 
     if request.method == 'POST':
-        if action == 'messages':
-            message = request.form.get('message', '').strip()
-            if message:
+        amount = request.form.get('amount', 0)
+        amount = float(amount) if amount else 0.0
+        bank_account_number = request.form.get('bank_account_number', None)
+        bank_pin = request.form.get('bank_pin', None)
+        recipient_username = request.form.get('recipient_username', None)
+        bank_name = request.form.get('bank_name', None)
+        #old_pin = request.form.get('old_pin', '').strip()
+        #new_pin = request.form.get('new_pin', '').strip()
+        #confirm_pin = request.form.get('confirm_pin', '').strip()
+
+
+        
+        if action == 'balance':
+         # Handle Cash-In to Account
+            if amount <= 0:
+                message = 'Amount must be greater than 0.'
+            elif not bank_account_number or not bank_pin:
+                message = 'Bank account number and PIN are required.'
+            else:
+                # Process cash-in to account
+                user['balance'] += amount
+                with get_db() as conn:
+                    conn.execute("UPDATE users SET balance = ? WHERE username = ?", (user['balance'], username))
+                    conn.commit()
+                message = f"Successfully cashed in ${amount} to your account."
+
+        #elif action == 'cashout_account':
+            ## Handle Cash-Out from Account
+            #if amount <= 0:
+                #message = ('Amount must be greater than 0.')
+            #elif user['balance'] < amount:
+                #message = ('Insufficient balance for cash-out.')
+            #elif not recipient_username:
+               # message = 'Recipient username is required.'
+            #else:
+                #with get_db() as conn:
+                    #recipient_user = conn.execute("SELECT * FROM users WHERE username = ?", (recipient_username,)).fetchone()
+                   # if recipient_user:
+                        ## Transfer money to recipient
+                       # user['balance'] -= amount
+                        #recipient_user['balance'] += amount
+                       # conn.execute("UPDATE users SET balance = ? WHERE username = ?", (user['balance'], username))
+                        #conn.execute("UPDATE users SET balance = ? WHERE username = ?", (recipient_user['balance'], recipient_username))
+                        #conn.commit()
+                        #message = f"Successfully transferred ${amount} to {recipient_username}."
+                    #else:
+                        #message = f"Recipient username '{recipient_username}' not found."
+
+        #elif action == 'cashin_bank':
+            # Handle Cash-In to Bank
+            #if not bank_pin:
+              #  message = ('Bank PIN is required.', 'error')
+               # return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+            #elif not check_password_hash(user['pin'], bank_pin):
+              #  message = ('Incorrect PIN.', 'error')
+                #return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+            #elif action == 'change-pin':
+                #if 'pin' in user and user['pin'] and old_pin:
+                  #  if not check_password_hash(user['pin'], old_pin):
+                  #      message = ("Old PIN is incorrect.", 'error')
+                  #      return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+                #if len(new_pin) != 4 or not new_pin.isdigit():
+                   # message = ("New PIN must be 4 digits.", 'error')
+               # elif new_pin != confirm_pin:
+                  #  message = ("New PIN and confirmation do not match.", 'error')
+                #else:
+                   # hashed_pin = generate_password_hash(new_pin)
+                   # with get_db() as conn:
+                   #     conn.execute("UPDATE users SET pin = ? WHERE username = ?", (hashed_pin, username))
+                   #     conn.commit()
+                    #message = ("PIN has been successfully created/updated.", 'success')
+                    #return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+                #return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+            #if amount <= 0:
+                #message = ('Amount must be greater than 0.')
+            #elif not bank_account_number or not bank_pin or not bank_name:
+                #message = ('Bank details are required.')
+            #else:
+                ## Process cash-in to bank
+                #user['bank_balance'] += amount
+                #with get_db() as conn:
+                    #conn.execute("UPDATE users SET bank_balance = ? WHERE username = ?", (user['bank_balance'], username))
+                   # conn.commit()
+                #message = f"Successfully cashed in ${amount} to your bank account ({bank_name})."
+
+        #elif action == 'cashout_bank':
+            # Handle Cash-Out from Bank (remove #(comment to use and modify it))
+            
+            # if not bank_pin:
+                #message = ('Bank PIN is required.', 'error')
+                #return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+            #elif not check_password_hash(user['pin'], bank_pin):
+               # message = ('Incorrect PIN.', 'error')
+               # return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+            #elif action == 'change-pin':
+                #if 'pin' in user and user['pin'] and old_pin:
+                    #if not check_password_hash(user['pin'], old_pin):
+                        #message = ("Old PIN is incorrect.", 'error')
+                        #return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+                #if len(new_pin) != 4 or not new_pin.isdigit():
+                    #message = ("New PIN must be 4 digits.", 'error')
+                #elif new_pin != confirm_pin:
+                   # message = ("New PIN and confirmation do not match.", 'error')
+                #else:
+                   # hashed_pin = generate_password_hash(new_pin)
+                   # with get_db() as conn:
+                    #    conn.execute("UPDATE users SET pin = ? WHERE username = ?", (hashed_pin, username))
+                    #    conn.commit()
+                    #message = ("PIN has been successfully created/updated.", 'success')
+                   # return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+
+                #return render_template('dashboard.html', username=username, message=message, unread_count=unread_count)
+            #if amount <= 0:
+               # message = 'Amount must be greater than 0.'
+            #elif user['bank_balance'] < amount:
+               # message = 'Insufficient balance for cash-out from bank.'
+            #elif not bank_account_number or not bank_pin or not bank_name:
+                #message = 'Bank details are required.'
+            #else:
+                # Process cash-out from bank
+                #user['bank_balance'] -= amount
+              #  with get_db() as conn:
+                    #conn.execute("UPDATE users SET bank_balance = ? WHERE username = ?", (user['bank_balance'], username))
+                  #  conn.commit()
+               # message = f"Successfully cashed out ${amount} from your bank account ({bank_name})."
+
+        elif action == 'messages':
+            message_content = request.form.get('message', '').strip()
+            if message_content:
                 message = ("Message sent successfully!", 'success')
             else:
                 message = ("Message can't be empty.", 'error')
+        elif action == 'transfer-money':
+            amount = request.form.get('amount', '').strip()
+            bank_account = request.form.get('bank_account', '').strip()
+
+            if not amount:
+                message = ("Amount can't be empty.", 'error')
+            elif not bank_account:
+                message = ("Bank Account number can't be empty", 'error')
+            else:
+                try:
+                    amount = float(amount)
+                    if user['balance'] < amount:
+                        message = ("Insufficient balance for transfer.", 'error')
+                    else:
+                        with get_db() as conn:
+                            recipient_user = conn.execute("SELECT * FROM users WHERE username = ?", (recipient_username,)).fetchone()
+                            if recipient_user:
+                                user['balance'] -= amount
+                                recipient_user = dict(recipient_user)
+                                recipient_user['balance'] += amount
+                                conn.execute("UPDATE users SET balance = ? WHERE username = ?", (user['balance'], username))
+                                conn.execute("UPDATE users SET balance = ? WHERE username = ?", (recipient_user['balance'], recipient_username))
+                                conn.commit()
+                                message = (f"Successfully transferred ${amount} to {recipient_username}.", 'success')
+                            else:
+                                message = (f"Recipient username '{recipient_username}' not found.", 'error')
+                except ValueError:
+                    message = ("Invalid amount.", 'error')
 
         elif action == 'pay bills':
             # Get the form inputs
@@ -140,15 +307,19 @@ def web_interface(username):
                 message = ("Account number must be numeric.", 'error')
             elif not amount.replace('.', '', 1).isdigit() or float(amount) <= 0:
                 message = ("Amount must be a positive number.", 'error')
+            elif user['balance'] < float(amount):
+                message = ("Insufficient balance to pay bills.", 'error')
             else:
                 try:
                     # Insert transaction into the database
                     with get_db() as conn:
                         conn.execute("INSERT INTO transactions (username, biller, amount, account_number) VALUES (?, ?, ?, ?)",
                                      (username, biller, float(amount), account_number))
+                        user['balance'] -= float(amount)  # Deduct the amount from user's balance
+                        conn.execute("UPDATE users SET balance = ? WHERE username = ?", (user['balance'], username))
                         conn.commit()
 
-                    # After successful insertion, show success message
+                        # After successful insertion, show success message
                     message = ("Payment successfully completed.", 'success')
 
                 except Exception as e:
@@ -156,27 +327,62 @@ def web_interface(username):
                     print(f"Error inserting transaction: {str(e)}")  # You can also use a logger
                     message = ("An error occurred while processing the payment.", 'error')
 
-            # Fetch the updated transactions to reflect changes immediately
+            # Update balance in database after transaction
             with get_db() as conn:
                 transactions = conn.execute("SELECT biller, amount, account_number, timestamp FROM transactions WHERE username = ?", (username,)).fetchall()
+                conn.execute("UPDATE users SET balance = ? WHERE username = ?", (user['balance'], username))
+                conn.commit()
 
-            # After insertion and transaction update, re-render the template
             return render_template('dashboard.html', username=username, action=action, message=message, biller=biller, amount=amount, account_number=account_number, transactions=transactions, unread_count=unread_count)
-    
-    # For GET requests, fetch transactions and render the page
+
+
+
+        elif action == 'sendmoney':
+            recipient_username = request.form.get('recipient_username', '').strip()
+            amount = request.form.get('amount', '').strip()
+
+            if not recipient_username:
+                message = ("Recipient username can't be empty.", 'error')
+            elif not amount:
+                message = ("Amount can't be empty.", 'error')
+            else:
+                try:
+                    amount = float(amount)
+                    if user['balance'] < amount:
+                        message = ("Insufficient balance for Send money.", 'error')
+                    else:
+                        with get_db() as conn:
+                            recipient_user = conn.execute("SELECT * FROM users WHERE username = ?", (recipient_username,)).fetchone()
+                            if recipient_user:
+                                user['balance'] -= amount
+                                recipient_user = dict(recipient_user)
+                                recipient_user['balance'] += amount
+                                conn.execute("UPDATE users SET balance = ? WHERE username = ?", (user['balance'], username))
+                                conn.execute("UPDATE users SET balance = ? WHERE username = ?", (recipient_user['balance'], recipient_username))
+                                conn.commit()
+                                message = (f"Successfully Send Money ${amount} to {recipient_username}.", 'success')
+                            else:
+                                message = (f"Recipient username '{recipient_username}' not found.", 'error')
+
+                except ValueError:
+                    message = ("Invalid amount.", 'error')
+
+    # Fetch notifications and unread count
     with get_db() as conn:
         transactions = conn.execute("SELECT biller, amount, account_number, timestamp FROM transactions WHERE username = ?", (username,)).fetchall()
         notifications = conn.execute("SELECT title, message, timestamp FROM notifications ORDER BY timestamp DESC").fetchall()
-
-        # Mark notifications as read if visiting the notifications page
-        if action == 'notification':
-            conn.execute("UPDATE notifications SET read = 1 WHERE read = 0")
-            conn.commit()
-
-        # Get unread notifications count
         unread_count = conn.execute("SELECT COUNT(*) FROM notifications WHERE read = 0").fetchone()[0]
 
-    return render_template('dashboard.html', username=username, action=action, message=message, biller=biller, amount=amount, account_number=account_number, transactions=transactions, notifications=notifications, unread_count=unread_count)
+    return render_template('dashboard.html', username=username, user=user, message=message, biller=biller, amount=amount, account_number=account_number, recipient=recipient, unread_count=unread_count, notifications=notifications, action=action)
+
+
+# Add Transaction Helper Function
+def add_transaction(user, transaction_type, amount):
+    user['transactions'].append({
+        'transaction_type': transaction_type,
+        'amount': amount,
+        'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    })
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
@@ -212,3 +418,4 @@ def admin_login():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
