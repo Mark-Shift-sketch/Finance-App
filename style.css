@@ -1,7 +1,7 @@
 body {
     background-image: url('OIP.jpg');
-    background-size: cover; /* Ensures the background image covers the entire page */
-    background-position: center; /* Centers the background image */
+    background-size: cover; 
+    background-position: center; 
     background-color: grey;
     display: flex;
     flex-direction: column;
@@ -9,31 +9,31 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    text-align: center; /* Centers text inside the elements */
+    text-align: center;
 }
 
 h1 {
     color: aqua;
     margin: 20px 0;
-    font-size: 3em; /* Increased font size */
+    font-size: 3em; 
 }
 
 
 form {
     display: flex;
-    flex-direction: column; /* Stack the inputs and button vertically */
-    align-items: center; /* Center the form elements horizontally */
+    flex-direction: column; 
+    align-items: center; 
     justify-content: center;
 }
 
 input {
     margin: 10px 0;
-    padding: 10px; /* Increased size */
-    font-size: 1.2em; /* Increased font size */
+    padding: 10px;
+    font-size: 1.2em;
     border-radius: 50px;
-    border: 1px solid; /* Added border */
-    width: 250px; /* Set a fixed width to avoid overflow */
-    text-align: center; /* Center input text */
+    border: 1px solid;
+    width: 250px; 
+    text-align: center;
 }
 
 .button {
@@ -41,16 +41,16 @@ input {
     padding: 10px;
     font-size: 1.2em;
     border-radius: 50px;
-    border: 1px solid; /* Added border */
-    background-color: #4CAF50; /* Added button background color */
-    color: white; /* Added button text color */
-    cursor: pointer; /* Added cursor change on hover */
-    width: 250px; /* Set a fixed width to match input size */
-    transition: background-color 0.3s; /* Smooth transition on hover */
+    border: 1px solid;
+    background-color: #4CAF50; 
+    color: white; 
+    cursor: pointer; 
+    width: 250px; 
+    transition: background-color 0.3s; 
 }
 
 .button:hover {
-    background-color: #45a049; /* Darker green on hover */
+    background-color: #45a049;
 }
 
 p {
@@ -58,23 +58,23 @@ p {
     font-weight: bold;
     font-size: 1em;
     color: white;
-    margin-top: 20px; /* Added margin for better spacing */
+    margin-top: 20px; 
 }
 
-/* Style the 'Sign up here' link */
+
 a {
-    color: grey; /* Set the color you want (green here) */
-    text-decoration: none; /* Remove the default underline */
-    font-weight: bold; /* Make the text bold */
+    color: grey; 
+    text-decoration: none;
+    font-weight: bold; 
 }
 
-/* Optional: Change color on hover */
+
 a:hover {
-    color: white; /* Set a different color when the user hovers over the link */
-    text-decoration: underline; /* Add underline on hover */
+    color: white; 
+    text-decoration: underline; 
 }
 
-/* Style the message (error or success) */
+/* Style the message error or success */
 ul {
     list-style-type: none;
     padding: 0;
@@ -84,7 +84,7 @@ ul {
 }
 
 #message {
-    background-color: transparent; /* Default red for error messages */
+    background-color: transparent; 
     color: red;
     padding: 10px;
     border-radius: 5px;
@@ -94,15 +94,15 @@ ul {
     width: 250px;
     text-align: center;
     opacity: 1;
-    transition: opacity 5s ease-out; /* Smooth fade-out transition */
+    transition: opacity 5s ease-out; 
 }
 
-/* Optionally change message color for success */
+
 #message.success {
-    background-color: transparent; /* Green for success messages */
+    background-color: transparent; 
 }
 
-/* Optional: Smooth transition for when the message disappears */
+
 ul li {
     animation: fadeOut 5s forwards;
 }
@@ -136,17 +136,17 @@ h3{
     border-radius: 50px;
     position: fixed;
     right: 530px;
-    background-color: #45a049; /* Green background for the button */
-    color: white; /* White text on the button */
-    padding: 10px 20px; /* Add some padding for better click area */
-    border: none; /* Remove default border */
-    cursor: pointer; /* Make the cursor a pointer on hover */
-    font-size: 10px; /* Adjust font size for better readability */
-    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    background-color: #45a049;
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    cursor: pointer;
+    font-size: 10px; 
+    transition: background-color 0.3s ease; 
 }
 
 .submit:hover {
-    background-color: #3e8e41; /* Darker shade of green on hover */
+    background-color: #3e8e41;
 }
 
 .navbar {
@@ -157,7 +157,7 @@ h3{
     width: 300px;
     background-color: transparent;
     padding: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds a subtle shadow for better visibility */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
 }
 
 .navbar a {
@@ -171,7 +171,7 @@ h3{
 }
 
 .navbar a:hover {
-    background-color: #7DF9FF; /* Light gray background on hover */
+    background-color: #7DF9FF; 
 }
 
 .navbar a i {
