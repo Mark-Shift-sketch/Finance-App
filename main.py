@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 app = Flask(__name__)
-app.secret_key = 'alkxctcegjjdvfbvgxzc'  # Use a strong secret key in production!
+app.secret_key = 'alkxctcegjjdvfbvgxzc' 
 
 def get_db():
     conn = sqlite3.connect('users.db', check_same_thread=False)
@@ -13,7 +13,7 @@ def get_db():
 
 def init_db():
     with get_db() as conn:
-        conn.execute('PRAGMA journal_mode=WAL;')  # Enable Write-Ahead Logging for better concurrency
+        conn.execute('PRAGMA journal_mode=WAL;')  
         
         # Create users table if it does not exist
         conn.execute('''CREATE TABLE IF NOT EXISTS users (
@@ -22,7 +22,7 @@ def init_db():
                             password TEXT NOT NULL
                         )''')
 
-        # Create transactions table if it does not exist
+        #Create transactions table if didnot exist
         conn.execute('''CREATE TABLE IF NOT EXISTS transactions (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             username TEXT NOT NULL,
@@ -32,7 +32,7 @@ def init_db():
                             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                         )''')
 
-        # Create notifications table if it does not exist
+        # Create notifications table if didnot exist
         conn.execute('''CREATE TABLE IF NOT EXISTS notifications (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             title TEXT NOT NULL,
@@ -41,7 +41,7 @@ def init_db():
                             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                         )''')
 
-        # Check if 'read' column exists, and add it if not
+        # Check if read column exists and add it if not
         try:
             conn.execute("SELECT read FROM notifications LIMIT 1")
         except sqlite3.OperationalError:
@@ -50,13 +50,15 @@ def init_db():
 
         conn.commit()
 
-# Call init_db() to create the tables when the application starts
+# init_db() to create the tables when the application starts
 init_db()
 
+#route all 
 @app.route('/')
 def home():
     return render_template('signup.html')
 
+#sign up
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -83,6 +85,7 @@ def signup():
 
     return render_template('signup.html')
 
+#log in
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -104,6 +107,7 @@ def login():
     return render_template('login.html')
 
 
+# Main interface 
 @app.route('/web/<username>', methods=['GET', 'POST'])
 def web_interface(username):
     with get_db() as conn:
@@ -376,7 +380,7 @@ def web_interface(username):
     return render_template('dashboard.html', username=username, user=user, message=message, biller=biller, amount=amount, account_number=account_number, recipient=recipient, unread_count=unread_count, notifications=notifications, action=action)
 
 
-# Add Transaction Helper Function
+# Add Transaction Function
 def add_transaction(user, transaction_type, amount):
     user['transactions'].append({
         'transaction_type': transaction_type,
@@ -401,13 +405,14 @@ def admin():
     
     return render_template('admin.html')
 
+#admin log in 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
         admin_username = request.form['username']
         admin_password = request.form['password']
 
-        # Simple hardcoded admin credentials check
+        # admin credentials check
         if admin_username == 'admin' and admin_password == 'password':
             session['admin'] = True
             return redirect(url_for('admin'))
